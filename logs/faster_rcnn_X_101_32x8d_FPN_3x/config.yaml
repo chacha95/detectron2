@@ -1,4 +1,4 @@
-CUDNN_BENCHMARK: false
+CUDNN_BENCHMARK: true
 DATALOADER:
   ASPECT_RATIO_GROUPING: true
   FILTER_EMPTY_ANNOTATIONS: true
@@ -20,8 +20,8 @@ INPUT:
   CROP:
     ENABLED: false
     SIZE:
-    - 0.9
-    - 0.9
+    - 1.0
+    - 1.0
     TYPE: relative_range
   FORMAT: BGR
   MASK_FORMAT: polygon
@@ -188,7 +188,7 @@ MODEL:
     - 0.5
     NAME: StandardROIHeads
     NMS_THRESH_TEST: 0.5
-    NUM_CLASSES: 80
+    NUM_CLASSES: 10
     POSITIVE_FRACTION: 0.25
     PROPOSAL_APPEND_GT: true
     SCORE_THRESH_TEST: 0.05
@@ -263,7 +263,7 @@ MODEL:
     NORM: GN
     NUM_CLASSES: 54
   WEIGHTS: detectron2://ImageNetPretrained/FAIR/X-101-32x8d.pkl
-OUTPUT_DIR: logs/R-CNN_basic
+OUTPUT_DIR: logs/faster_rcnn_X_101_32x8d_FPN_3x
 SEED: -1
 SOLVER:
   BASE_LR: 0.02
