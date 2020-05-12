@@ -131,7 +131,10 @@ def setup(args):
 
 def main(args):
     cfg = setup(args)
-
+     # dataset 등록
+    register_dataset()
+    print("Custom dataset Register Okay")
+    
     if args.eval_only:
         model = Trainer.build_model(cfg)
         DetectionCheckpointer(model, save_dir=cfg.OUTPUT_DIR).resume_or_load(
@@ -154,12 +157,34 @@ def main(args):
         trainer.register_hooks(
             [hooks.EvalHook(0, lambda: trainer.test_with_TTA(cfg, trainer.model))]
         )
+    
     return trainer.train()
 
+def register_dataset():
+    """
+    COCO format으로된 custom dataset을 추가하는 함수
+    """
+    # COCO format으로 된 custom dataset 추가
+    from detectron2.data.datasets import register_coco_instances
+    from os.path import join
+
+    for d in ["train", "val"]:
+        root_dir = "/detectron2_repo/datasets/data_voucher_2019"
+        group_dir = join(root_dir, "group1")
+        json_file = join(root_dir, group_dir, "annotations_json/instances_" + d + ".json")
+        image_root = join(root_dir, group_dir, d + "_images")
+        name = "voucher_" + d
+    
+        register_coco_instances(name, {}, json_file, image_root)
+
+    # 데이터셋의 metadata도 등록
+    voucher_metadata = MetadataCatalog.get("voucher_train")
+    print(voucher_metadata)
 
 if __name__ == "__main__":
     args = default_argument_parser().parse_args()
     print("Command Line Args:", args)
+
     launch(
         main,
         args.num_gpus,
