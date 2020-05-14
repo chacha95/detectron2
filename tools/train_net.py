@@ -177,9 +177,11 @@ def register_dataset():
     
         register_coco_instances(name, {}, json_file, image_root)
 
-    # 데이터셋의 metadata도 등록
-    voucher_metadata = MetadataCatalog.get("voucher_train")
-    print(voucher_metadata)
+    voucher_train_metadata = MetadataCatalog.get("voucher_train")
+    voucher_test_metadata = MetadataCatalog.get("voucher_val")
+    print(voucher_train_metadata)
+    print(voucher_test_metadata)
+    
 
 if __name__ == "__main__":
     args = default_argument_parser().parse_args()
