@@ -248,7 +248,7 @@ MODEL:
     NAME: SemSegFPNHead
     NORM: GN
     NUM_CLASSES: 54
-  WEIGHTS: ''
+  WEIGHTS: logs/Base-RCNN-C4/model_final.pth
 OUTPUT_DIR: logs/Base-RCNN-C4
 SEED: -1
 SOLVER:
