@@ -848,3 +848,82 @@ ProposalNetwork(
   [35mfc1000_w[0m
   [35mconv1_b[0m
 [05/22 01:39:48] detectron2.engine.train_loop INFO: Starting training from iteration 0
+[05/22 05:44:39] detectron2.data.datasets.coco INFO: Loading /detectron2_repo/datasets/data_voucher_2019/group1/annotations_json/instances_val.json takes 1.16 seconds.
+[05/22 05:44:39] detectron2.data.datasets.coco INFO: Loaded 1701 images in COCO format from /detectron2_repo/datasets/data_voucher_2019/group1/annotations_json/instances_val.json
+[05/22 05:44:40] detectron2.data.build INFO: Distribution of instances among all 50 categories:
+[36m|   category    | #instances   |   category    | #instances   |   category    | #instances   |
+|:-------------:|:-------------|:-------------:|:-------------|:-------------:|:-------------|
+| Samdasoo_pet  | 3085         | CornsilkTea.. | 3097         | Cocacola_can  | 3156         |
+|   Pepsi_can   | 3075         |  BananaMilk   | 3169         | Coolpeace_c.. | 3155         |
+| LetsbeMild_.. | 3093         | Mycafelatte.. | 2988         | MinutemaidO.. | 3173         |
+| BacchusF_gl.. | 3155         | Pyungchangs.. | 0            | Skybarley_pet | 0            |
+| Cocacola_pet  | 0            |   Pepsi_pet   | 0            |  Milkis_can   | 0            |
+| SeoulMilk_c.. | 0            | CantataPrem.. | 0            | MinutemaidG.. | 0            |
+| Vita500_glass | 0            | Monsterener.. | 0            |   Icis8_pet   | 0            |
+| TreviPlane_.. | 0            | ChilsungCid.. | 0            |  Sprite_can   | 0            |
+| WelchsGrape.. | 0            | HersheysOri.. | 0            | GeorgiaOrig.. | 0            |
+| PearjuiceID.. | 0            | OronaminC_g.. | 0            | Pocarisweat.. | 0            |
+| CJHoveniaDu.. | 0            | VictoriaPla.. | 0            | ChilsungCid.. | 0            |
+|  Sprite_pet   | 0            |  Yakultgrand  | 0            | BaristaSmok.. | 0            |
+| Youussnoopy.. | 0            | Grapebonbon.. | 0            |   Hot6_can    | 0            |
+| GatoradeLem.. | 0            | Baeksansu_pet | 0            | 2percentaqu.. | 0            |
+| FantaOrange.. | 0            | DemisodaApp.. | 0            | JuicycoolPl.. | 0            |
+| MaeilMilk_c.. | 0            | MaximTOPThe.. | 0            | JayeoneunTo.. | 0            |
+| GreenMaesil.. | 0            | ViracRicedr.. | 0            |               |              |
+|     total     | 31146        |               |              |               |              |[0m
+[05/22 05:44:40] detectron2.data.common INFO: Serializing 1701 elements to byte tensors and concatenating them all ...
+[05/22 05:44:40] detectron2.data.common INFO: Serialized dataset takes 8.70 MiB
+[05/22 05:44:41] detectron2.evaluation.evaluator INFO: Start inference on 850 images
+[05/22 05:44:49] detectron2.engine.train_loop ERROR: Exception during training:
+Traceback (most recent call last):
+  File "/detectron2_repo/detectron2/engine/train_loop.py", line 133, in train
+    self.after_step()
+  File "/detectron2_repo/detectron2/engine/train_loop.py", line 154, in after_step
+    h.after_step()
+  File "/detectron2_repo/detectron2/engine/hooks.py", line 350, in after_step
+    self._do_eval()
+  File "/detectron2_repo/detectron2/engine/hooks.py", line 324, in _do_eval
+    results = self._func()
+  File "/detectron2_repo/detectron2/engine/defaults.py", line 352, in test_and_save_results
+    self._last_eval_results = self.test(self.cfg, self.model)
+  File "/detectron2_repo/detectron2/engine/defaults.py", line 518, in test
+    results_i = inference_on_dataset(model, data_loader, evaluator)
+  File "/detectron2_repo/detectron2/evaluation/evaluator.py", line 141, in inference_on_dataset
+    outputs = model(inputs)
+  File "/usr/local/lib/python3.6/dist-packages/torch/nn/modules/module.py", line 550, in __call__
+    result = self.forward(*input, **kwargs)
+  File "/usr/local/lib/python3.6/dist-packages/torch/nn/parallel/distributed.py", line 445, in forward
+    output = self.module(*inputs[0], **kwargs[0])
+  File "/usr/local/lib/python3.6/dist-packages/torch/nn/modules/module.py", line 550, in __call__
+    result = self.forward(*input, **kwargs)
+  File "/detectron2_repo/detectron2/modeling/meta_arch/rcnn.py", line 238, in forward
+    features = self.backbone(images.tensor)
+  File "/usr/local/lib/python3.6/dist-packages/torch/nn/modules/module.py", line 550, in __call__
+    result = self.forward(*input, **kwargs)
+  File "/detectron2_repo/detectron2/modeling/backbone/fpn.py", line 123, in forward
+    bottom_up_features = self.bottom_up(x)
+  File "/usr/local/lib/python3.6/dist-packages/torch/nn/modules/module.py", line 550, in __call__
+    result = self.forward(*input, **kwargs)
+  File "/detectron2_repo/detectron2/modeling/backbone/resnet.py", line 463, in forward
+    x = stage(x)
+  File "/usr/local/lib/python3.6/dist-packages/torch/nn/modules/module.py", line 550, in __call__
+    result = self.forward(*input, **kwargs)
+  File "/usr/local/lib/python3.6/dist-packages/torch/nn/modules/container.py", line 100, in forward
+    input = module(input)
+  File "/usr/local/lib/python3.6/dist-packages/torch/nn/modules/module.py", line 550, in __call__
+    result = self.forward(*input, **kwargs)
+  File "/detectron2_repo/detectron2/modeling/backbone/resnet.py", line 204, in forward
+    out = self.conv2(out)
+  File "/usr/local/lib/python3.6/dist-packages/torch/nn/modules/module.py", line 550, in __call__
+    result = self.forward(*input, **kwargs)
+  File "/detectron2_repo/detectron2/layers/wrappers.py", line 93, in forward
+    x = super().forward(x)
+  File "/usr/local/lib/python3.6/dist-packages/torch/nn/modules/conv.py", line 349, in forward
+    return self._conv_forward(input, self.weight)
+  File "/usr/local/lib/python3.6/dist-packages/torch/nn/modules/conv.py", line 346, in _conv_forward
+    self.padding, self.dilation, self.groups)
+  File "/usr/local/lib/python3.6/dist-packages/torch/utils/data/_utils/signal_handling.py", line 66, in handler
+    _error_if_any_worker_fails()
+RuntimeError: DataLoader worker (pid 10527) is killed by signal: Bus error. It is possible that dataloader's workers are out of shared memory. Please try to raise your shared memory limit.
+[05/22 05:44:49] detectron2.engine.hooks INFO: Overall training speed: 89997 iterations in 4:04:19 (0.1629 s / it)
+[05/22 05:44:49] detectron2.engine.hooks INFO: Total training time: 4:04:43 (0:00:23 on hooks)
