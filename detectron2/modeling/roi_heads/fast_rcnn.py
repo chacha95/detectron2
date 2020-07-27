@@ -1,6 +1,7 @@
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
 import logging
 import torch
+
 from fvcore.nn import smooth_l1_loss
 from torch import nn
 from torch.nn import functional as F
@@ -10,6 +11,8 @@ from detectron2.layers import Linear, ShapeSpec, batched_nms, cat
 from detectron2.modeling.box_regression import Box2BoxTransform, apply_deltas_broadcast
 from detectron2.structures import Boxes, Instances
 from detectron2.utils.events import get_event_storage
+from detectron2.category_info.category import Category
+
 
 __all__ = ["fast_rcnn_inference", "FastRCNNOutputLayers"]
 
@@ -98,36 +101,63 @@ def fast_rcnn_inference_single_image(
         scores = scores[valid_mask]
 
     scores = scores[:, :-1]
+    
     num_bbox_reg_classes = boxes.shape[1] // 4
     # Convert to Boxes to use the `clip` function ...
     boxes = Boxes(boxes.reshape(-1, 4))
     boxes.clip(image_shape)
     boxes = boxes.tensor.view(-1, num_bbox_reg_classes, 4)  # R x C x 4
-
+    
     # Filter results based on detection scores
     filter_mask = scores > score_thresh  # R x K
     # R' x 2. First column contains indices of the R predictions;
     # Second column contains indices of classes.
+    
+    # category에 있는 물품의 score만 가져옴
+    for iter, cat_num in enumerate(Category.cat_in_set):
+        if iter is 0:
+            scores_tmp = torch.reshape(scores[:, cat_num], (-1, 1))
+            filter_tmp = torch.reshape(filter_mask[:, cat_num], (-1, 1))
+            boxes_tmp = torch.reshape(boxes[:, cat_num, :], (-1, 1, 4))
+        else:
+            col = torch.reshape(scores[:, cat_num], (-1, 1))
+            scores_tmp = torch.cat((scores_tmp, col), dim=1)
+            
+            col = torch.reshape(filter_mask[:, cat_num], (-1, 1))
+            filter_tmp = torch.cat((filter_tmp, col), dim=1)
+            
+            col = torch.reshape(boxes[:, cat_num, :], (-1, 1, 4))
+            boxes_tmp = torch.cat((boxes_tmp, col), dim=1)
+    
+    scores = scores_tmp
+    filter_mask = filter_tmp
+    boxes = boxes_tmp
+    
+    # softmax layer
+    softmax = nn.Softmax(dim=1)
+    scores = softmax(scores)
+   
     filter_inds = filter_mask.nonzero()
     if num_bbox_reg_classes == 1:
         boxes = boxes[filter_inds[:, 0], 0]
     else:
         boxes = boxes[filter_mask]
+    
     scores = scores[filter_mask]
-
+    
     # Apply per-class NMS
     keep = batched_nms(boxes, scores, filter_inds[:, 1], nms_thresh)
     
     if topk_per_image >= 0:
         keep = keep[:topk_per_image]
-      
+    
     boxes, scores, filter_inds = boxes[keep], scores[keep], filter_inds[keep]
 
     result = Instances(image_shape)
     result.pred_boxes = Boxes(boxes)
     result.scores = scores
     result.pred_classes = filter_inds[:, 1]
-    
+        
     return result, filter_inds[:, 0]
 
 
