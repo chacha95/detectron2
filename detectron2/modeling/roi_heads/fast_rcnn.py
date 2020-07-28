@@ -108,7 +108,7 @@ def fast_rcnn_inference_single_image(
     boxes.clip(image_shape)
     boxes = boxes.tensor.view(-1, num_bbox_reg_classes, 4)  # R x C x 4
     
-     # category에 있는 물품의 score만 가져옴
+    # category에 있는 물품의 score만 가져옴
     for iter, cat_num in enumerate(Category.cat_in_set):
         if iter is 0:
             scores_tmp = torch.reshape(scores[:, cat_num], (-1, 1))
@@ -122,16 +122,23 @@ def fast_rcnn_inference_single_image(
     
     scores = scores_tmp
     boxes = boxes_tmp
+
+    #---------------------------score 재계산---------------------------
+    # 지정 category로 다시 만들어진 score값 재 계산
+    total = torch.reshape(torch.sum(scores_tmp, dim=1), (-1, 1))
+    recal = torch.div(scores_tmp, total)
+    
+    #  for i in range(len(scores)):
+    #     print(scores[i])
+    #     print(recal[i])
+    score = recal
+    #---------------------------score 재계산---------------------------
     
     # Filter results based on detection scores
     filter_mask = scores > score_thresh  # R x K
     # R' x 2. First column contains indices of the R predictions;
     # Second column contains indices of classes.
-   
-    # softmax layer
-    softmax = nn.Softmax(dim=1)
-    scores = softmax(scores)
-   
+    
     filter_inds = filter_mask.nonzero()
     if num_bbox_reg_classes == 1:
         boxes = boxes[filter_inds[:, 0], 0]
@@ -147,7 +154,7 @@ def fast_rcnn_inference_single_image(
         keep = keep[:topk_per_image]
     
     boxes, scores, filter_inds = boxes[keep], scores[keep], filter_inds[keep]
-
+    
     result = Instances(image_shape)
     result.pred_boxes = Boxes(boxes)
     result.scores = scores
