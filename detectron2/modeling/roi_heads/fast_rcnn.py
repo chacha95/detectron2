@@ -108,31 +108,26 @@ def fast_rcnn_inference_single_image(
     boxes.clip(image_shape)
     boxes = boxes.tensor.view(-1, num_bbox_reg_classes, 4)  # R x C x 4
     
-    # Filter results based on detection scores
-    filter_mask = scores > score_thresh  # R x K
-    # R' x 2. First column contains indices of the R predictions;
-    # Second column contains indices of classes.
-    
-    # category에 있는 물품의 score만 가져옴
+     # category에 있는 물품의 score만 가져옴
     for iter, cat_num in enumerate(Category.cat_in_set):
         if iter is 0:
             scores_tmp = torch.reshape(scores[:, cat_num], (-1, 1))
-            filter_tmp = torch.reshape(filter_mask[:, cat_num], (-1, 1))
             boxes_tmp = torch.reshape(boxes[:, cat_num, :], (-1, 1, 4))
         else:
             col = torch.reshape(scores[:, cat_num], (-1, 1))
             scores_tmp = torch.cat((scores_tmp, col), dim=1)
-            
-            col = torch.reshape(filter_mask[:, cat_num], (-1, 1))
-            filter_tmp = torch.cat((filter_tmp, col), dim=1)
-            
+
             col = torch.reshape(boxes[:, cat_num, :], (-1, 1, 4))
             boxes_tmp = torch.cat((boxes_tmp, col), dim=1)
     
     scores = scores_tmp
-    filter_mask = filter_tmp
     boxes = boxes_tmp
     
+    # Filter results based on detection scores
+    filter_mask = scores > score_thresh  # R x K
+    # R' x 2. First column contains indices of the R predictions;
+    # Second column contains indices of classes.
+   
     # softmax layer
     softmax = nn.Softmax(dim=1)
     scores = softmax(scores)
